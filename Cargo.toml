@@ -1,8 +1,11 @@
 [package]
 name = "rustplugin"
-version = "0.1.0"
+version = "1.0.0"
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
+
+[build-dependencies]
+winres = "0.1"
