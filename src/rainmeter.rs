@@ -1,7 +1,7 @@
 #![allow(unused)]
 use std::os::raw::{c_int, c_void};
 
-pub struct RainmeterAPI {
+pub struct API {
   rm: *mut c_void,
 }
 
@@ -24,9 +24,9 @@ pub fn from_wchar(ptr: *const u16) -> String {
   String::from_utf16_lossy(slice)
 }
 
-impl RainmeterAPI {
-  pub fn new(rm: *mut c_void) -> RainmeterAPI {
-    RainmeterAPI { rm }
+impl API {
+  pub fn new(rm: *mut c_void) -> API {
+    API { rm }
   }
   pub fn read_string(
     &self,

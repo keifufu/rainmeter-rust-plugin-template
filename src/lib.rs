@@ -5,11 +5,11 @@ mod measure;
 mod rainmeter;
 
 use measure::Measure;
-use rainmeter::{from_wchar, to_wchar, RainmeterAPI};
+use rainmeter::{from_wchar, to_wchar, API};
 
 #[no_mangle]
 pub extern "C" fn Initialize(data: &mut *mut c_void, rm: *mut c_void) {
-  let measure = Measure::new(RainmeterAPI::new(rm));
+  let measure = Measure::new(API::new(rm));
   let handle = Box::into_raw(Box::new(measure));
 
   unsafe {
@@ -31,7 +31,7 @@ pub extern "C" fn Reload(data: *mut c_void, rm: *mut c_void, max_value: &mut f64
   unsafe {
     let measure_ptr: *mut Measure = data as *mut Measure;
     let measure = &mut *measure_ptr;
-    measure.reload(RainmeterAPI::new(rm), max_value);
+    measure.reload(API::new(rm), max_value);
   }
 }
 
