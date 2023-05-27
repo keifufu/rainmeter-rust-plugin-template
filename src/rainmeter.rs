@@ -95,10 +95,8 @@ impl RainmeterAPI {
   pub fn get_skin_window(&self) -> *mut c_void {
     unsafe { RmGet(self.rm, RmGetType::SkinWindowHandle) }
   }
-  pub fn log(&self, log_type: LogType, message: String) {
-    unsafe {
-      RmLog(self.rm, log_type, to_wchar(message).as_ptr());
-    }
+  pub fn log(&self, log_type: LogType, message: String) -> i32 {
+    unsafe { RmLog(self.rm, log_type, to_wchar(message).as_ptr()) }
   }
 }
 
