@@ -1,8 +1,5 @@
 #![allow(unused)]
-use std::os::{
-  raw::{c_int, c_void},
-  windows::prelude::OsStringExt,
-};
+use std::os::raw::{c_int, c_void};
 
 pub struct RainmeterAPI {
   rm: *mut c_void,
