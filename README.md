@@ -7,10 +7,13 @@ This template provides API bindings and exported functions that closely resemble
 
 ### Building the Plugin
 1. Install Rust (`winget install rustlang.rustup`)
-2. Install "Desktop development with C++" in Visual Studio (we need the msvc compiler)
+2. Install "Desktop development with C++" in Visual Studio
 3. Clone this repository
 4. Run `build.bat`
 
 It's important to note that `build.bat` has configuration options, make sure to check them out!
 
 Additionally, plugin name, version and copyright can be found in `Cargo.toml`
+
+### Notes
+- The 32bit output is currently crashing rainmeter, I'm working on resolving it.
