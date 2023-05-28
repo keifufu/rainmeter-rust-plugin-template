@@ -69,6 +69,9 @@ impl Api {
   pub fn log(&self, log_type: LogType, message: String) -> i32 {
     unsafe { RmLog(self.rm, log_type, message.to_wchar_vec().as_ptr()) }
   }
+  pub fn ls_log(log_type: LogType, message: String) -> i32 {
+    unsafe { LSLog(log_type, std::ptr::null(), message.to_wchar_vec().as_ptr()) }
+  }
 }
 
 #[repr(C)]
@@ -87,7 +90,6 @@ enum RmGetType {
   SkinName = 3,
   SkinWindowHandle = 4,
 }
-// TODO: actually expose lslog?
 
 #[cfg(target_arch = "x86_64")]
 #[link(name = "api/x64/rainmeter")]
@@ -103,7 +105,7 @@ extern "C" {
   fn RmPathToAbsolute(rm: *mut c_void, relativePath: *const wchar_t) -> *mut wchar_t;
   fn RmExecute(skin: *mut c_void, command: *const wchar_t);
   fn RmGet(rm: *mut c_void, rm_get_type: RmGetType) -> *mut c_void;
-  fn LSLog(log_type: c_int, unused: *const wchar_t, message: *const wchar_t) -> c_int;
+  fn LSLog(log_type: LogType, unused: *const wchar_t, message: *const wchar_t) -> c_int;
   fn RmLog(rm: *mut c_void, level: LogType, message: *const wchar_t) -> c_int;
 }
 
@@ -122,6 +124,6 @@ extern "C" {
   fn RmPathToAbsolute(rm: *mut c_void, relativePath: *const wchar_t) -> *mut wchar_t;
   fn RmExecute(skin: *mut c_void, command: *const wchar_t);
   fn RmGet(rm: *mut c_void, rm_get_type: RmGetType) -> *mut c_void;
-  fn LSLog(log_type: c_int, unused: *const wchar_t, message: *const wchar_t) -> c_int;
+  fn LSLog(log_type: LogType, unused: *const wchar_t, message: *const wchar_t) -> c_int;
   fn RmLog(rm: *mut c_void, level: LogType, message: *const wchar_t) -> c_int;
 }
