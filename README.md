@@ -7,8 +7,9 @@ This template provides API bindings and exported functions that closely resemble
 
 ### Building the Plugin
 1. Install Rust (`winget install rustlang.rustup`)
-2. Clone this repository
-3. Run `build.bat`
+2. Install "Desktop development with C++" in Visual Studio (we need the msvc compiler)
+3. Clone this repository
+4. Run `build.bat`
 
 It's important to note that `build.bat` has configuration options, make sure to check them out!
 
