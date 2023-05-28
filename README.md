@@ -1,15 +1,15 @@
 ## Rainmeter Rust Plugin Template
-A template for rainmeter plugins written in rust.  
-The example given is a simple counter, check Example.ini
+This template allows for the creation of Rainmeter plugins using Rust.  
+It serves as a starting point by providing a simple counter example, which can be found in the `Example.ini` file.
 
-### Why?
-Rust is cool
+### Usage
+This template provides API bindings and exported functions that closely resemble the ones found in the C# and C++ versions of Rainmeter plugins. For more information, please refer to the [Plugin Anatomy](https://docs.rainmeter.net/developers/plugin/plugin-anatomy) documentation.
 
-### Building
-Install rust, clone this repo and run `build.bat`
+### Building the Plugin
+1. Install Rust on your system (`winget install rustlang.rustup`).
+2. Clone this repository to your local machine.
+3. Run the `build.bat` file.
 
-### Notes
-- build.bat assumes you have rainmeter installed in C:\Program Files\Rainmeter
-- Version and copyright info is in build.rs
-- If you change the name in Cargo.toml, update build.bat and build.rs
-- Probably doesn't work for 32-bit as is
+It's important to note that `build.bat` has configuration options, make sure to check them out!
+
+Additionally, plugin name, version and copyright can be found in `Cargo.toml`.

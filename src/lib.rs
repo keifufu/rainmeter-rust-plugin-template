@@ -3,13 +3,15 @@ use std::mem;
 
 mod measure;
 mod rainmeter;
+mod utils;
 
 use measure::Measure;
-use rainmeter::{from_wchar, to_wchar, API};
+use rainmeter::Api;
+use utils::Wchar;
 
 #[no_mangle]
 pub extern "C" fn Initialize(data: &mut *mut c_void, rm: *mut c_void) {
-  let measure = Measure::new(API::new(rm));
+  let measure = Measure::new(Api::new(rm));
   let handle = Box::into_raw(Box::new(measure));
 
   unsafe {
@@ -31,7 +33,7 @@ pub extern "C" fn Reload(data: *mut c_void, rm: *mut c_void, max_value: &mut f64
   unsafe {
     let measure_ptr: *mut Measure = data as *mut Measure;
     let measure = &mut *measure_ptr;
-    measure.reload(API::new(rm), max_value);
+    measure.reload(Api::new(rm), max_value);
   }
 }
 
@@ -51,7 +53,7 @@ pub extern "C" fn GetString(data: *mut c_void) -> *const u16 {
     let measure = &mut *measure_ptr;
 
     if let Some(string_value) = measure.get_string() {
-      return to_wchar(string_value).as_ptr();
+      return string_value.to_wchar_vec().as_ptr();
     }
 
     std::ptr::null()
@@ -63,6 +65,6 @@ pub extern "C" fn ExecuteBang(data: *mut c_void, args: *const u16) {
   unsafe {
     let measure_ptr: *mut Measure = data as *mut Measure;
     let measure = &mut *measure_ptr;
-    measure.execute_bang(from_wchar(args));
+    measure.execute_bang(String::from_wchar_ptr(args));
   }
 }

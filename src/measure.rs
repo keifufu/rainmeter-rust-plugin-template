@@ -1,4 +1,4 @@
-use rainmeter::API;
+use rainmeter::Api;
 
 // Example on how to return a string or a number based on if the measure provided `Type=String` or `Type=Number`
 pub enum DataType {
@@ -15,13 +15,13 @@ fn string_to_enum(s: &str) -> Option<DataType> {
 }
 
 pub struct Measure {
-  pub api: API,
+  pub api: Api,
   pub count: i32,
   pub data_type: DataType,
 }
 
 impl Measure {
-  pub fn new(api: API) -> Measure {
+  pub fn new(api: Api) -> Measure {
     Measure {
       api,
       count: 0,
@@ -30,22 +30,20 @@ impl Measure {
   }
   pub fn dispose(&self) {}
   #[allow(unused)]
-  pub fn reload(&mut self, api: API, max_value: &mut f64) {
+  pub fn reload(&mut self, api: Api, max_value: &mut f64) {
     self.api = api;
     let data_type_string = self.api.read_string("Type", "String", None);
 
     let data_type = string_to_enum(&data_type_string);
 
-    match data_type {
-      Some(value) => {
-        self.data_type = value;
-      }
-      None => {}
+    if let Some(value) = data_type {
+      self.data_type = value;
     }
   }
   pub fn execute_bang(&mut self, args: String) {
     let bang = args.to_lowercase();
 
+    #[allow(clippy::single_match)]
     match bang.as_str() {
       "resetcounter" => self.count = 0,
       _ => {}

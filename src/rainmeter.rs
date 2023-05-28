@@ -1,32 +1,14 @@
 #![allow(unused)]
+use crate::utils::{wchar_t, Wchar};
 use std::os::raw::{c_int, c_void};
 
-pub struct API {
+pub struct Api {
   rm: *mut c_void,
 }
 
-// If we call .to_ptr() here, it will sometimes get deallocated too early.
-pub fn to_wchar(str: String) -> Vec<u16> {
-  format!("{}\0", str).encode_utf16().collect::<Vec<u16>>()
-}
-
-pub fn from_wchar(ptr: *const u16) -> String {
-  if ptr.is_null() {
-    return String::new();
-  }
-
-  let mut len = 0;
-  while unsafe { *ptr.offset(len) != 0 } {
-    len += 1;
-  }
-
-  let slice = unsafe { std::slice::from_raw_parts(ptr, len as usize) };
-  String::from_utf16_lossy(slice)
-}
-
-impl API {
-  pub fn new(rm: *mut c_void) -> API {
-    API { rm }
+impl Api {
+  pub fn new(rm: *mut c_void) -> Api {
+    Api { rm }
   }
   pub fn read_string(
     &self,
@@ -35,65 +17,57 @@ impl API {
     replace_measures: Option<bool>,
   ) -> String {
     unsafe {
-      from_wchar(RmReadString(
+      String::from_wchar_ptr(RmReadString(
         self.rm,
-        to_wchar(option.to_string()).as_ptr(),
-        to_wchar(def_value.to_string()).as_ptr(),
+        option.to_wchar_vec().as_ptr(),
+        def_value.to_wchar_vec().as_ptr(),
         replace_measures.unwrap_or(true),
       ))
     }
   }
   pub fn read_path(&self, option: &str, def_value: &str) -> String {
     unsafe {
-      from_wchar(RmPathToAbsolute(
+      String::from_wchar_ptr(RmPathToAbsolute(
         self.rm,
-        to_wchar(self.read_string(option, def_value, None)).as_ptr(),
+        self
+          .read_string(option, def_value, None)
+          .to_wchar_vec()
+          .as_ptr(),
       ))
     }
   }
   pub fn read_double(&self, option: &str, def_value: f64) -> f64 {
-    unsafe { RmReadFormula(self.rm, to_wchar(option.to_string()).as_ptr(), def_value) }
+    unsafe { RmReadFormula(self.rm, option.to_wchar_vec().as_ptr(), def_value) }
   }
   pub fn read_int(&self, option: &str, def_value: i32) -> i32 {
-    unsafe {
-      RmReadFormula(
-        self.rm,
-        to_wchar(option.to_string()).as_ptr(),
-        def_value as f64,
-      ) as i32
-    }
+    unsafe { RmReadFormula(self.rm, option.to_wchar_vec().as_ptr(), def_value as f64) as i32 }
   }
   pub fn replace_variables(&self, str: &str) -> String {
-    unsafe {
-      from_wchar(RmReplaceVariables(
-        self.rm,
-        to_wchar(str.to_string()).as_ptr(),
-      ))
-    }
+    unsafe { String::from_wchar_ptr(RmReplaceVariables(self.rm, str.to_wchar_vec().as_ptr())) }
   }
   pub fn get_measure_name(&self) -> String {
-    unsafe { from_wchar(RmGet(self.rm, RmGetType::MeasureName) as *mut u16) }
+    unsafe { String::from_wchar_ptr(RmGet(self.rm, RmGetType::MeasureName) as *mut wchar_t) }
   }
   pub fn get_skin(&self) -> *mut c_void {
     unsafe { RmGet(self.rm, RmGetType::Skin) }
   }
   pub fn get_settings_file(&self) -> String {
-    unsafe { from_wchar(RmGet(self.rm, RmGetType::SettingsFile) as *mut u16) }
+    unsafe { String::from_wchar_ptr(RmGet(self.rm, RmGetType::SettingsFile) as *mut wchar_t) }
   }
   pub fn get_skin_name(&self) -> String {
-    unsafe { from_wchar(RmGet(self.rm, RmGetType::SkinName) as *mut u16) }
+    unsafe { String::from_wchar_ptr(RmGet(self.rm, RmGetType::SkinName) as *mut wchar_t) }
   }
   pub fn execute(&self, skin: *mut c_void, command: &str) {
-    unsafe { RmExecute(skin, to_wchar(command.to_string()).as_ptr()) }
+    unsafe { RmExecute(skin, command.to_wchar_vec().as_ptr()) }
   }
   pub fn execute_self(&self, command: &str) {
-    unsafe { RmExecute(self.get_skin(), to_wchar(command.to_string()).as_ptr()) }
+    unsafe { RmExecute(self.get_skin(), command.to_wchar_vec().as_ptr()) }
   }
   pub fn get_skin_window(&self) -> *mut c_void {
     unsafe { RmGet(self.rm, RmGetType::SkinWindowHandle) }
   }
   pub fn log(&self, log_type: LogType, message: String) -> i32 {
-    unsafe { RmLog(self.rm, log_type, to_wchar(message).as_ptr()) }
+    unsafe { RmLog(self.rm, log_type, message.to_wchar_vec().as_ptr()) }
   }
 }
 
@@ -113,20 +87,41 @@ enum RmGetType {
   SkinName = 3,
   SkinWindowHandle = 4,
 }
+// TODO: actually expose lslog?
 
-#[link(name = "api/rainmeter")]
+#[cfg(target_arch = "x86_64")]
+#[link(name = "api/x64/rainmeter")]
 extern "C" {
   fn RmReadString(
     rm: *mut c_void,
-    option: *const u16,
-    defValue: *const u16,
+    option: *const wchar_t,
+    defValue: *const wchar_t,
     replaceMeasures: bool,
-  ) -> *mut u16;
-  fn RmReadFormula(rm: *mut c_void, option: *const u16, defValue: f64) -> f64;
-  fn RmReplaceVariables(rm: *mut c_void, string: *const u16) -> *mut u16;
-  fn RmPathToAbsolute(rm: *mut c_void, relativePath: *const u16) -> *mut u16;
-  fn RmExecute(skin: *mut c_void, command: *const u16);
+  ) -> *mut wchar_t;
+  fn RmReadFormula(rm: *mut c_void, option: *const wchar_t, defValue: f64) -> f64;
+  fn RmReplaceVariables(rm: *mut c_void, string: *const wchar_t) -> *mut wchar_t;
+  fn RmPathToAbsolute(rm: *mut c_void, relativePath: *const wchar_t) -> *mut wchar_t;
+  fn RmExecute(skin: *mut c_void, command: *const wchar_t);
   fn RmGet(rm: *mut c_void, rm_get_type: RmGetType) -> *mut c_void;
-  fn LSLog(log_type: c_int, unused: *const u16, message: *const u16) -> c_int;
-  fn RmLog(rm: *mut c_void, level: LogType, message: *const u16) -> c_int;
+  fn LSLog(log_type: c_int, unused: *const wchar_t, message: *const wchar_t) -> c_int;
+  fn RmLog(rm: *mut c_void, level: LogType, message: *const wchar_t) -> c_int;
+}
+
+#[cfg(target_arch = "x86")]
+#[link(name = "api/x86/rainmeter")]
+extern "C" {
+  #[cfg_attr(target_arch = "x86", link_name = "RmReadString@16")]
+  fn RmReadString(
+    rm: *mut c_void,
+    option: *const wchar_t,
+    defValue: *const wchar_t,
+    replaceMeasures: bool,
+  ) -> *mut wchar_t;
+  fn RmReadFormula(rm: *mut c_void, option: *const wchar_t, defValue: f64) -> f64;
+  fn RmReplaceVariables(rm: *mut c_void, string: *const wchar_t) -> *mut wchar_t;
+  fn RmPathToAbsolute(rm: *mut c_void, relativePath: *const wchar_t) -> *mut wchar_t;
+  fn RmExecute(skin: *mut c_void, command: *const wchar_t);
+  fn RmGet(rm: *mut c_void, rm_get_type: RmGetType) -> *mut c_void;
+  fn LSLog(log_type: c_int, unused: *const wchar_t, message: *const wchar_t) -> c_int;
+  fn RmLog(rm: *mut c_void, level: LogType, message: *const wchar_t) -> c_int;
 }

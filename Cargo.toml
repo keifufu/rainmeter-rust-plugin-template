@@ -1,11 +1,10 @@
 [package]
 name = "rustplugin"
 version = "1.0.0"
+license = "© 2023 - keifufu"
 
 [lib]
 crate-type = ["cdylib"]
 
-[dependencies]
-
 [build-dependencies]
-winres = "0.1"
+winres = "0.1.12"
