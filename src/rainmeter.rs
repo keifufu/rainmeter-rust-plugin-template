@@ -66,10 +66,12 @@ impl Api {
   pub fn get_skin_window(&self) -> *mut c_void {
     unsafe { RmGet(self.rm, RmGetType::SkinWindowHandle) }
   }
-  pub fn log(&self, log_type: LogType, message: String) -> i32 {
+  pub fn log<T: Into<String>>(&self, log_type: LogType, message: T) -> i32 {
+    let message: String = message.into();
     unsafe { RmLog(self.rm, log_type, message.to_wchar_vec().as_ptr()) }
   }
-  pub fn ls_log(log_type: LogType, message: String) -> i32 {
+  pub fn ls_log<T: Into<String>>(log_type: LogType, message: T) -> i32 {
+    let message: String = message.into();
     unsafe { LSLog(log_type, std::ptr::null(), message.to_wchar_vec().as_ptr()) }
   }
 }
@@ -112,18 +114,29 @@ extern "C" {
 #[cfg(target_arch = "x86")]
 #[link(name = "api/x86/rainmeter")]
 extern "C" {
-  #[cfg_attr(target_arch = "x86", link_name = "RmReadString@16")]
+  fn LSLog(log_type: LogType, unused: *const wchar_t, message: *const wchar_t) -> c_int;
+}
+
+#[cfg(target_arch = "x86")]
+#[link(name = "x86_api_wrapper")]
+extern "C" {
+  #[cfg_attr(target_arch = "x86", link_name = "RmReadStringWrapper")]
   fn RmReadString(
     rm: *mut c_void,
     option: *const wchar_t,
     defValue: *const wchar_t,
     replaceMeasures: bool,
   ) -> *mut wchar_t;
+  #[cfg_attr(target_arch = "x86", link_name = "RmReadFormulaWrapper")]
   fn RmReadFormula(rm: *mut c_void, option: *const wchar_t, defValue: f64) -> f64;
+  #[cfg_attr(target_arch = "x86", link_name = "RmReplaceVariablesWrapper")]
   fn RmReplaceVariables(rm: *mut c_void, string: *const wchar_t) -> *mut wchar_t;
+  #[cfg_attr(target_arch = "x86", link_name = "RmPathToAbsoluteWrapper")]
   fn RmPathToAbsolute(rm: *mut c_void, relativePath: *const wchar_t) -> *mut wchar_t;
+  #[cfg_attr(target_arch = "x86", link_name = "RmExecuteWrapper")]
   fn RmExecute(skin: *mut c_void, command: *const wchar_t);
+  #[cfg_attr(target_arch = "x86", link_name = "RmGetWrapper")]
   fn RmGet(rm: *mut c_void, rm_get_type: RmGetType) -> *mut c_void;
-  fn LSLog(log_type: LogType, unused: *const wchar_t, message: *const wchar_t) -> c_int;
+  #[cfg_attr(target_arch = "x86", link_name = "RmLogWrapper")]
   fn RmLog(rm: *mut c_void, level: LogType, message: *const wchar_t) -> c_int;
 }

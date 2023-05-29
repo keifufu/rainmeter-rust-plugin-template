@@ -7,4 +7,5 @@ license = "© 2023 - keifufu"
 crate-type = ["cdylib"]
 
 [build-dependencies]
-winres = "0.1.12"
+winres = "0.1"
+cc = "1.0"

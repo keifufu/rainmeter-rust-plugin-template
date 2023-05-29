@@ -1,8 +1,8 @@
 @echo off
 
-:: ============= ::
-:: Configuration
-:: ============= ::
+:: =================== ::
+:: Start Configuration ::
+:: =================== ::
 
 :: If plugin should be copied to the plugin folder after building
 set COPY_PLUGIN_AFTER_BUILD="false"
@@ -13,9 +13,9 @@ set PLUGIN_DIRECTORY_PATH="%APPDATA%\Rainmeter\Plugins"
 :: The rainmeter executable path
 set RAINMETER_EXE_PATH="C:\Program Files\Rainmeter\Rainmeter.exe"
 
-:: ============= ::
-:: Configuration
-:: ============= ::
+:: ================= ::
+:: End Configuration ::
+:: ================= ::
 
 rustup target list | findstr /C:"x86_64-pc-windows-msvc (installed)" > nul 2>&1
 if errorLevel 1 (

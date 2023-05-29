@@ -14,6 +14,3 @@ This template provides API bindings and exported functions that closely resemble
 It's important to note that `build.bat` has configuration options, make sure to check them out!
 
 Additionally, plugin name, version and copyright can be found in `Cargo.toml`
-
-### Notes
-- The 32bit output is currently crashing rainmeter, I'm working on resolving it.
