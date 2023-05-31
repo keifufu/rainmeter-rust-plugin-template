@@ -1,6 +1,6 @@
-#![allow(unused)]
-use crate::utils::{wchar_t, Wchar};
-use std::os::raw::{c_int, c_void};
+use std::ffi::{c_int, c_void};
+
+use crate::rainmeter::types::*;
 
 pub struct Api {
   rm: *mut c_void,

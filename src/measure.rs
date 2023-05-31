@@ -1,4 +1,4 @@
-use rainmeter::Api;
+use rainmeter::api::Api;
 
 // Example on how to return a string or a number based on if the measure provided `Type=String` or `Type=Number`
 pub enum DataType {

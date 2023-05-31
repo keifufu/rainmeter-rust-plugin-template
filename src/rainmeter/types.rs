@@ -1,5 +1,11 @@
+use std::ffi::c_void;
+
 #[allow(non_camel_case_types)]
 pub type wchar_t = u16;
+pub type RmData = *mut c_void;
+pub type RmRm = *mut c_void;
+pub type RmString = *const wchar_t;
+pub type RmArgv = *const RmString;
 
 pub trait Wchar {
   fn to_wchar_vec(&self) -> Vec<wchar_t>;
@@ -27,9 +33,7 @@ impl Wchar for str {
 // If we call .to_ptr() here, it will sometimes get deallocated too early.
 fn to_wchar_vec<T: Into<String>>(str: T) -> Vec<wchar_t> {
   let str: String = str.into();
-  format!("{}\0", str)
-    .encode_utf16()
-    .collect::<Vec<wchar_t>>()
+  str.encode_utf16().chain(Some(0)).collect::<Vec<wchar_t>>()
 }
 
 fn from_wchar_ptr(ptr: *const wchar_t) -> String {
