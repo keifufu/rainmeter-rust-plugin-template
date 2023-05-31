@@ -1,13 +1,12 @@
-use std::ffi::{c_int, c_void};
-
+#![allow(unused)]
 use crate::rainmeter::types::*;
 
 pub struct Api {
-  rm: *mut c_void,
+  rm: RmRm,
 }
 
 impl Api {
-  pub fn new(rm: *mut c_void) -> Api {
+  pub fn new(rm: RmRm) -> Api {
     Api { rm }
   }
   pub fn read_string(
@@ -48,7 +47,7 @@ impl Api {
   pub fn get_measure_name(&self) -> String {
     unsafe { String::from_wchar_ptr(RmGet(self.rm, RmGetType::MeasureName) as *mut wchar_t) }
   }
-  pub fn get_skin(&self) -> *mut c_void {
+  pub fn get_skin(&self) -> RmData {
     unsafe { RmGet(self.rm, RmGetType::Skin) }
   }
   pub fn get_settings_file(&self) -> String {
@@ -57,13 +56,13 @@ impl Api {
   pub fn get_skin_name(&self) -> String {
     unsafe { String::from_wchar_ptr(RmGet(self.rm, RmGetType::SkinName) as *mut wchar_t) }
   }
-  pub fn execute(&self, skin: *mut c_void, command: &str) {
+  pub fn execute(&self, skin: RmData, command: &str) {
     unsafe { RmExecute(skin, command.to_wchar_vec().as_ptr()) }
   }
   pub fn execute_self(&self, command: &str) {
     unsafe { RmExecute(self.get_skin(), command.to_wchar_vec().as_ptr()) }
   }
-  pub fn get_skin_window(&self) -> *mut c_void {
+  pub fn get_skin_window(&self) -> RmData {
     unsafe { RmGet(self.rm, RmGetType::SkinWindowHandle) }
   }
   pub fn log<T: Into<String>>(&self, log_type: LogType, message: T) -> i32 {
@@ -97,24 +96,24 @@ enum RmGetType {
 #[link(name = "api/x64/rainmeter")]
 extern "C" {
   fn RmReadString(
-    rm: *mut c_void,
+    rm: RmRm,
     option: *const wchar_t,
     defValue: *const wchar_t,
     replaceMeasures: bool,
   ) -> *mut wchar_t;
-  fn RmReadFormula(rm: *mut c_void, option: *const wchar_t, defValue: f64) -> f64;
-  fn RmReplaceVariables(rm: *mut c_void, string: *const wchar_t) -> *mut wchar_t;
-  fn RmPathToAbsolute(rm: *mut c_void, relativePath: *const wchar_t) -> *mut wchar_t;
-  fn RmExecute(skin: *mut c_void, command: *const wchar_t);
-  fn RmGet(rm: *mut c_void, rm_get_type: RmGetType) -> *mut c_void;
-  fn LSLog(log_type: LogType, unused: *const wchar_t, message: *const wchar_t) -> c_int;
-  fn RmLog(rm: *mut c_void, level: LogType, message: *const wchar_t) -> c_int;
+  fn RmReadFormula(rm: RmRm, option: *const wchar_t, defValue: f64) -> f64;
+  fn RmReplaceVariables(rm: RmRm, string: *const wchar_t) -> *mut wchar_t;
+  fn RmPathToAbsolute(rm: RmRm, relativePath: *const wchar_t) -> *mut wchar_t;
+  fn RmExecute(skin: RmRm, command: *const wchar_t);
+  fn RmGet(rm: RmRm, rm_get_type: RmGetType) -> RmData;
+  fn LSLog(log_type: LogType, unused: *const wchar_t, message: *const wchar_t) -> i32;
+  fn RmLog(rm: RmRm, level: LogType, message: *const wchar_t) -> i32;
 }
 
 #[cfg(target_arch = "x86")]
 #[link(name = "api/x86/rainmeter")]
 extern "C" {
-  fn LSLog(log_type: LogType, unused: *const wchar_t, message: *const wchar_t) -> c_int;
+  fn LSLog(log_type: LogType, unused: *const wchar_t, message: *const wchar_t) -> i32;
 }
 
 #[cfg(target_arch = "x86")]
@@ -122,21 +121,21 @@ extern "C" {
 extern "C" {
   #[cfg_attr(target_arch = "x86", link_name = "RmReadStringWrapper")]
   fn RmReadString(
-    rm: *mut c_void,
+    rm: RmRm,
     option: *const wchar_t,
     defValue: *const wchar_t,
     replaceMeasures: bool,
   ) -> *mut wchar_t;
   #[cfg_attr(target_arch = "x86", link_name = "RmReadFormulaWrapper")]
-  fn RmReadFormula(rm: *mut c_void, option: *const wchar_t, defValue: f64) -> f64;
+  fn RmReadFormula(rm: RmRm, option: *const wchar_t, defValue: f64) -> f64;
   #[cfg_attr(target_arch = "x86", link_name = "RmReplaceVariablesWrapper")]
-  fn RmReplaceVariables(rm: *mut c_void, string: *const wchar_t) -> *mut wchar_t;
+  fn RmReplaceVariables(rm: RmRm, string: *const wchar_t) -> *mut wchar_t;
   #[cfg_attr(target_arch = "x86", link_name = "RmPathToAbsoluteWrapper")]
-  fn RmPathToAbsolute(rm: *mut c_void, relativePath: *const wchar_t) -> *mut wchar_t;
+  fn RmPathToAbsolute(rm: RmRm, relativePath: *const wchar_t) -> *mut wchar_t;
   #[cfg_attr(target_arch = "x86", link_name = "RmExecuteWrapper")]
-  fn RmExecute(skin: *mut c_void, command: *const wchar_t);
+  fn RmExecute(skin: RmRm, command: *const wchar_t);
   #[cfg_attr(target_arch = "x86", link_name = "RmGetWrapper")]
-  fn RmGet(rm: *mut c_void, rm_get_type: RmGetType) -> *mut c_void;
+  fn RmGet(rm: RmRm, rm_get_type: RmGetType) -> RmData;
   #[cfg_attr(target_arch = "x86", link_name = "RmLogWrapper")]
-  fn RmLog(rm: *mut c_void, level: LogType, message: *const wchar_t) -> c_int;
+  fn RmLog(rm: RmRm, level: LogType, message: *const wchar_t) -> i32;
 }
