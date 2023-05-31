@@ -53,7 +53,7 @@ pub extern "C" fn ToRandomCase(data: RmData, argc: i32, argv: RmArgv) -> RmStrin
   let _ = borrow_data!(data, Measure);
   let args = parse_rm_args!(&argv, argc);
 
-  if argc == 1 {
+  if args.len() == 1 {
     // This isn't actually random to not require the rand crate,
     // so I just alternative upper-lower for this example.
     let mut result = String::new();

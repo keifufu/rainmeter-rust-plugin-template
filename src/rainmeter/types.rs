@@ -1,9 +1,7 @@
-use std::ffi::c_void;
-
 #[allow(non_camel_case_types)]
 pub type wchar_t = u16;
-pub type RmData = *mut c_void;
-pub type RmRm = *mut c_void;
+pub type RmData = *mut u8;
+pub type RmRm = *mut u8;
 pub type RmString = *const wchar_t;
 pub type RmArgv = *const RmString;
 
