@@ -2,36 +2,36 @@ mod measure;
 mod rainmeter;
 
 use measure::Measure;
-use rainmeter::api::Api;
+use rainmeter::api::RmApi;
 use rainmeter::types::*;
 
-#[no_mangle]
-pub extern "C" fn Initialize(data: &mut RmData, rm: RmRm) {
+#[export_name = "Initialize"]
+fn initialize(data: &mut RmData, rm: RmRm) {
   let measure = Measure::new(RmApi::new(rm));
   set_data!(data, measure);
 }
 
-#[no_mangle]
-pub extern "C" fn Finalize(data: RmData) {
+#[export_name = "Finalize"]
+fn finalize(data: RmData) {
   let measure = rm_take_data!(data, Measure);
   measure.dispose();
   drop(measure);
 }
 
-#[no_mangle]
-pub extern "C" fn Reload(data: RmData, rm: RmRm, max_value: &mut f64) {
+#[export_name = "Reload"]
+fn reload(data: RmData, rm: RmRm, max_value: &mut f64) {
   let measure = rm_borrow_data!(data, Measure);
   measure.reload(RmApi::new(rm), max_value);
 }
 
-#[no_mangle]
-pub extern "C" fn Update(data: RmData) -> f64 {
+#[export_name = "Update"]
+fn update(data: RmData) -> f64 {
   let measure = rm_borrow_data!(data, Measure);
   measure.update()
 }
 
-#[no_mangle]
-pub extern "C" fn GetString(data: RmData) -> RmString {
+#[export_name = "GetString"]
+fn get_string(data: RmData) -> RmString {
   let measure = rm_borrow_data!(data, Measure);
 
   if let Some(string) = measure.get_string() {
@@ -41,15 +41,15 @@ pub extern "C" fn GetString(data: RmData) -> RmString {
   rm_null_string!()
 }
 
-#[no_mangle]
-pub extern "C" fn ExecuteBang(data: RmData, args: RmString) {
+#[export_name = "ExecuteBang"]
+fn execute_bang(data: RmData, args: RmString) {
   let measure = rm_borrow_data!(data, Measure);
   measure.execute_bang(rm_parse_string!(args));
 }
 
 // Example of a custom function
-#[no_mangle]
-pub extern "C" fn ToRandomCase(data: RmData, argc: i32, argv: RmArgv) -> RmString {
+#[export_name = "ToRandomCase"]
+fn to_random_case(data: RmData, argc: i32, argv: RmArgv) -> RmString {
   let _ = rm_borrow_data!(data, Measure);
   let args = rm_parse_args!(&argv, argc);
 
