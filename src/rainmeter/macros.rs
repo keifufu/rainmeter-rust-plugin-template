@@ -1,5 +1,5 @@
 #[macro_export]
-macro_rules! borrow_data {
+macro_rules! rm_borrow_data {
   ($data:expr, $ty:ty) => {
     unsafe { &mut *($data as *mut $ty) }
   };
@@ -14,35 +14,35 @@ macro_rules! set_data {
 }
 
 #[macro_export]
-macro_rules! take_data {
+macro_rules! rm_take_data {
   ($data: expr, $ty:ty) => {
     unsafe { Box::from_raw($data as *mut $ty) }
   };
 }
 
 #[macro_export]
-macro_rules! parse_rm_string {
+macro_rules! rm_parse_string {
   ($data: expr) => {
     String::from_wchar_ptr($data)
   };
 }
 
 #[macro_export]
-macro_rules! to_rm_string {
+macro_rules! rm_to_string {
   ($data: expr) => {
     $data.to_wchar_vec().as_ptr()
   };
 }
 
 #[macro_export]
-macro_rules! null_rm_string {
+macro_rules! rm_null_string {
   () => {
     std::ptr::null()
   };
 }
 
 #[macro_export]
-macro_rules! parse_rm_args {
+macro_rules! rm_parse_args {
   ($argv: expr, $argc: expr) => {
     unsafe {
       let argv_slice: &[RmString] = std::slice::from_raw_parts(*$argv, $argc as usize);

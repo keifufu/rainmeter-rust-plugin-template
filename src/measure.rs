@@ -1,4 +1,4 @@
-use rainmeter::api::Api;
+use rainmeter::api::RmApi;
 
 // Example on how to return a string or a number based on if the measure provided `Type=String` or `Type=Number`
 pub enum DataType {
@@ -15,24 +15,24 @@ fn string_to_enum(s: &str) -> Option<DataType> {
 }
 
 pub struct Measure {
-  pub api: Api,
+  pub rm_api: RmApi,
   pub count: i32,
   pub data_type: DataType,
 }
 
 impl Measure {
-  pub fn new(api: Api) -> Measure {
+  pub fn new(api: RmApi) -> Measure {
     Measure {
-      api,
+      rm_api: api,
       count: 0,
       data_type: DataType::String,
     }
   }
   pub fn dispose(&self) {}
   #[allow(unused)]
-  pub fn reload(&mut self, api: Api, max_value: &mut f64) {
-    self.api = api;
-    let data_type_string = self.api.read_string("Type", "String", None);
+  pub fn reload(&mut self, rm_api: RmApi, max_value: &mut f64) {
+    self.rm_api = rm_api;
+    let data_type_string = self.rm_api.read_string("Type", "String", None);
 
     let data_type = string_to_enum(&data_type_string);
 

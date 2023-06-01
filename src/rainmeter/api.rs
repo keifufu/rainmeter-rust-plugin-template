@@ -1,13 +1,13 @@
 #![allow(unused)]
 use crate::rainmeter::types::*;
 
-pub struct Api {
+pub struct RmApi {
   rm: RmRm,
 }
 
-impl Api {
-  pub fn new(rm: RmRm) -> Api {
-    Api { rm }
+impl RmApi {
+  pub fn new(rm: RmRm) -> RmApi {
+    RmApi { rm }
   }
   pub fn read_string(
     &self,
@@ -116,6 +116,8 @@ extern "C" {
   fn LSLog(log_type: LogType, unused: *const wchar_t, message: *const wchar_t) -> i32;
 }
 
+// x64_api_wrapper is api/x86/wrapper/api_wrapper.c
+// It's compiled in build.rs
 #[cfg(target_arch = "x86")]
 #[link(name = "x86_api_wrapper")]
 extern "C" {
