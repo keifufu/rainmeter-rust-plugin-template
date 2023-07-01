@@ -104,7 +104,7 @@ extern "C" {
   fn RmReadFormula(rm: RmRm, option: *const wchar_t, defValue: f64) -> f64;
   fn RmReplaceVariables(rm: RmRm, string: *const wchar_t) -> *mut wchar_t;
   fn RmPathToAbsolute(rm: RmRm, relativePath: *const wchar_t) -> *mut wchar_t;
-  fn RmExecute(skin: RmRm, command: *const wchar_t);
+  fn RmExecute(skin: RmData, command: *const wchar_t);
   fn RmGet(rm: RmRm, rm_get_type: RmGetType) -> RmData;
   fn LSLog(log_type: LogType, unused: *const wchar_t, message: *const wchar_t) -> i32;
   fn RmLog(rm: RmRm, level: LogType, message: *const wchar_t) -> i32;
@@ -135,7 +135,7 @@ extern "C" {
   #[cfg_attr(target_arch = "x86", link_name = "RmPathToAbsoluteWrapper")]
   fn RmPathToAbsolute(rm: RmRm, relativePath: *const wchar_t) -> *mut wchar_t;
   #[cfg_attr(target_arch = "x86", link_name = "RmExecuteWrapper")]
-  fn RmExecute(skin: RmRm, command: *const wchar_t);
+  fn RmExecute(skin: RmData, command: *const wchar_t);
   #[cfg_attr(target_arch = "x86", link_name = "RmGetWrapper")]
   fn RmGet(rm: RmRm, rm_get_type: RmGetType) -> RmData;
   #[cfg_attr(target_arch = "x86", link_name = "RmLogWrapper")]

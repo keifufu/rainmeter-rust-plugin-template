@@ -6,7 +6,7 @@ macro_rules! rm_borrow_data {
 }
 
 #[macro_export]
-macro_rules! set_data {
+macro_rules! rm_set_data {
   ($data:expr, $val:expr) => {
     let handle = Box::into_raw(Box::new($val));
     unsafe { *$data = std::mem::transmute(handle) }
@@ -14,9 +14,10 @@ macro_rules! set_data {
 }
 
 #[macro_export]
-macro_rules! rm_take_data {
+macro_rules! rm_drop_data {
   ($data: expr, $ty:ty) => {
-    unsafe { Box::from_raw($data as *mut $ty) }
+    let data_to_drop = unsafe { Box::from_raw($data as *mut $ty) };
+    drop(data_to_drop);
   };
 }
 

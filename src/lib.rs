@@ -8,14 +8,15 @@ use rainmeter::types::*;
 #[export_name = "Initialize"]
 fn initialize(data: &mut RmData, rm: RmRm) {
   let measure = Measure::new(RmApi::new(rm));
-  set_data!(data, measure);
+  rm_set_data!(data, measure);
 }
 
 #[export_name = "Finalize"]
 fn finalize(data: RmData) {
-  let measure = rm_take_data!(data, Measure);
+  let measure = rm_borrow_data!(data, Measure);
   measure.dispose();
-  drop(measure);
+
+  rm_drop_data!(data, Measure);
 }
 
 #[export_name = "Reload"]
